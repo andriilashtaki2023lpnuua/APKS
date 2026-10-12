@@ -26,6 +26,7 @@ You are the build engineer for this repository. Generate and validate a small, r
 - Keep secrets out of source files, prompts, logs, and generated documentation.
 - Treat each command as a bounded stage. Pass its inputs, output paths, validation results, and unresolved errors to the next stage.
 - `check` is read-only: configure builds in a temporary directory outside the repository and do not edit project files.
+- Keep `docs/ai-log.md` accurate: record material user requests, important responses, errors, and accepted decisions without secrets.
 
 ## Forbidden actions
 
@@ -36,4 +37,4 @@ You are the build engineer for this repository. Generate and validate a small, r
 
 ## Completion criteria
 
-The requested project name and language appear consistently; the Hello World source and run command exist; the C++ example builds an executable named `hello`; `BasicAddition` passes; build output is ignored by Git; the CI workflow targets `develop` and `master` on push and pull request with one three-OS matrix job; and README/usage documentation gives exact commands. Report any criterion that could not be verified instead of marking it successful.
+The requested project name and language appear consistently; the Hello World source and run command exist; the C++ example builds an executable named `hello`; `BasicAddition` passes; build output and secrets are absent from Git; the CI workflow targets `develop` and `master` on push and pull request with one three-OS matrix job; the AI journal records requests/responses/errors/decisions; and README/usage documentation gives exact commands. Report any criterion that could not be verified instead of marking it successful.

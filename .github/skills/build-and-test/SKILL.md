@@ -5,7 +5,24 @@ description: Create an idempotent CMake build, a testable function and BasicAddi
 
 # Build and Test
 
-Use this skill after project scaffolding to create a portable build, a small independently testable function, its unit test, and scripts that perform configure/build/test. Preserve existing targets and tests unless they directly conflict with the requested project.
+## Purpose
+
+Create a portable build, an independently testable function and unit test, and scripts that perform configure/build/test.
+
+## Inputs
+
+- Project name and language from `project-scaffold`.
+- Source paths and the exact run command from the scaffold handoff.
+- Existing build configuration, targets, and tests.
+
+## Outputs
+
+- `CMakeLists.txt` and the named CMake executable/test targets.
+- Testable function source/header and GoogleTest test.
+- `ci.bat` and `ci.sh`, including optional external build-directory support.
+- Handoff containing configure/build/test commands, target names, tool versions, and exit results.
+
+Preserve existing targets and tests unless they directly conflict with the requested project.
 
 ## CMake requirements
 

@@ -5,6 +5,21 @@ description: Create and validate a three-OS GitHub Actions matrix that delegates
 
 # GitHub Actions
 
+## Purpose
+
+Create a cross-platform workflow that delegates all configure/build/test behavior to checked-in platform scripts.
+
+## Inputs
+
+- Existing `ci.bat` and `ci.sh` paths and their invocation conventions.
+- Required runner matrix and push/pull_request branch filters.
+- Build/test handoff and current GitHub Actions constraints.
+
+## Outputs
+
+- `.github/workflows/ci.yml` with one job and the three-OS matrix.
+- Workflow validation result and a handoff describing triggers, runners, scripts, and diagnostics.
+
 Create `.github/workflows/ci.yml` only after the platform build scripts exist. The workflow checks out the repository and invokes those scripts; all configure, compile, executable, and test logic stays in `ci.bat` or `ci.sh`.
 
 ## Requirements
