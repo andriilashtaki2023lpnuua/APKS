@@ -5,7 +5,26 @@ description: Create an idempotent Hello World scaffold from a project name and l
 
 # Project Scaffold
 
-Use this skill when the user requests a project scaffold. Inputs are `project_name` and `language`; preserve their spelling in the project title and choose language-appropriate source and run instructions. For this repository's required example, use project name `hello` and language `C++17`.
+## Purpose
+
+Create a minimal, repeat-safe Hello World scaffold with a readable README and safe ignore rules.
+
+## Inputs
+
+- `project_name`: the user-provided project name.
+- `language`: the user-requested programming language and version.
+- Existing source paths, Git status, and current README/ignore content.
+
+Preserve the requested values. For this repository's required example, use `project_name=hello` and `language=C++17`.
+
+## Outputs
+
+- Language-appropriate source path and exact run command.
+- `README.md` with title, prerequisites, and run instructions.
+- Initial or safely extended `.gitignore`.
+- Handoff containing input values, paths, run command, changed files, and validation results.
+
+## Procedure
 
 ## Procedure
 
