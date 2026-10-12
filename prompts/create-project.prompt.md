@@ -1,6 +1,11 @@
 ---
 mode: agent
-description: Generate the C++ source and unit tests.
+description: Scaffold a named Hello World project in the requested language.
+argument-hint: "<project-name> <language>"
 ---
 
-Follow `.github/skills/project-scaffold/SKILL.md`. On the current feature branch, create a minimal C++17 console program in `src/main.cpp` and focused GoogleTest unit tests in `tests/test_main.cpp`. Keep behavior deterministic, portable, and documented. Preserve all agent instructions and unrelated work.
+Prerequisites: `git-init` completed and the workspace/project name and language are known. Invoke `.github/skills/project-scaffold/SKILL.md` with `project_name` and `language` from the user's request; do not infer a different language silently.
+
+Expected files: language-specific source, `README.md`, and a non-destructive `.gitignore` update. For `hello`/`C++17`, create `src/main.cpp` printing `Hello, World!`; document the exact run command. Verify the source exists, the command is present in README, and build output is ignored.
+
+On conflict or unsupported language, preserve existing files and report `Scaffold blocked: <reason>` with the source paths inspected. Do not duplicate README sections or ignore entries on rerun.
