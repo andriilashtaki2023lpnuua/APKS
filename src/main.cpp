@@ -1,8 +1,6 @@
-#include "greeting.hpp"
-
 #include <iostream>
 
 int main() {
-    std::cout << make_greeting("world") << '\n';
+    std::cout << "Hello, World!" << '\n';
     return 0;
 }

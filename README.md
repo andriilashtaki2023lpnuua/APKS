@@ -1,12 +1,12 @@
-# Lab 1: C++ Build Engineer
+# Hello World C++ Project
 
-A small cross-platform C++17 greeting application with GoogleTest, CMake, and GitHub Actions for Windows, Linux, and macOS.
+A minimal cross-platform C++17 Hello World application with a GoogleTest `BasicAddition` test, CMake, and GitHub Actions for Windows, Linux, and macOS.
 
 ## Run locally
 
 Prerequisites: a C++17 compiler, CMake 3.20 or newer, and network access on the first configure so CMake can download GoogleTest.
 
-On Windows, run `ci.bat` from a terminal. On Linux or macOS, run `bash ci.sh`. Both scripts configure and build into the ignored `build/` directory, then run the unit tests with CTest.
+On Windows, run `ci.bat` from a terminal. On Linux or macOS, run `bash ci.sh`. Both scripts configure and build the `hello` executable, then run the `BasicAddition` unit test with CTest. Build output goes to the ignored `build/` directory by default.
 
 The detailed setup and agent invocation steps are in [docs/usage.md](docs/usage.md).
 

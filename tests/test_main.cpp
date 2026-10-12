@@ -1,11 +1,7 @@
-#include "greeting.hpp"
+#include "math.hpp"
 
 #include <gtest/gtest.h>
 
-TEST(GreetingTest, IncludesTheProvidedName) {
-    EXPECT_EQ(make_greeting("Ada"), "Hello, Ada!");
-}
-
-TEST(GreetingTest, UsesWorldWhenNameIsEmpty) {
-    EXPECT_EQ(make_greeting(""), "Hello, world!");
+TEST(MathTest, BasicAddition) {
+    EXPECT_EQ(add(2, 3), 5);
 }

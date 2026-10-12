@@ -3,6 +3,8 @@ set -eu
 
 cd "$(dirname "$0")"
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --config Release
-ctest --test-dir build -C Release --output-on-failure
+BUILD_DIR="${1:-build}"
+
+cmake -S . -B "$BUILD_DIR" -DCMAKE_BUILD_TYPE=Release
+cmake --build "$BUILD_DIR" --config Release
+ctest --test-dir "$BUILD_DIR" -C Release --output-on-failure

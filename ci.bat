@@ -2,11 +2,14 @@
 setlocal
 cd /d "%~dp0"
 
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+set "BUILD_DIR=%~1"
+if "%BUILD_DIR%"=="" set "BUILD_DIR=build"
+
+cmake -S . -B "%BUILD_DIR%" -DCMAKE_BUILD_TYPE=Release
 if errorlevel 1 exit /b 1
 
-cmake --build build --config Release
+cmake --build "%BUILD_DIR%" --config Release
 if errorlevel 1 exit /b 1
 
-ctest --test-dir build -C Release --output-on-failure
+ctest --test-dir "%BUILD_DIR%" -C Release --output-on-failure
 if errorlevel 1 exit /b 1
