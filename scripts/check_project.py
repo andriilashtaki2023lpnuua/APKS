@@ -38,6 +38,7 @@ SECRET_NAMES = {".env", "id_rsa", "id_ed25519", "credentials.json", "secrets.jso
 class Audit:
     def __init__(self) -> None:
         self.failures = 0
+        self.blocked = 0
 
     def check(self, label: str, passed: bool, detail: str = "") -> None:
         state = "PASS" if passed else "FAIL"
@@ -45,12 +46,25 @@ class Audit:
         if not passed:
             self.failures += 1
 
+    def not_run(self, label: str, detail: str = "") -> None:
+        print(f"NOT RUN: {label}" + (f" - {detail}" if detail else ""))
+        self.blocked += 1
+
 
 def read_text(root: Path, relative_path: str) -> str:
     try:
         return (root / relative_path).read_text(encoding="utf-8")
     except (OSError, UnicodeError):
         return ""
+
+
+def has_populated_section(document: str, heading: str) -> bool:
+    match = re.search(rf"(?m)^{re.escape(heading)}\s*$", document)
+    if not match:
+        return False
+    next_heading = re.search(r"(?m)^## ", document[match.end():])
+    content = document[match.end():match.end() + next_heading.start()] if next_heading else document[match.end():]
+    return any(line.strip() and not line.lstrip().startswith("<!--") for line in content.splitlines())
 
 
 def run_process(command: list[str], root: Path, timeout: int = 30) -> subprocess.CompletedProcess[str]:
@@ -147,7 +161,22 @@ def check_project_files(root: Path, audit: Audit) -> None:
 
     journal = read_text(root, "docs/ai-log.md")
     journal_sections = ["## User requests", "## Important responses", "## Errors", "## Accepted decisions"]
-    audit.check("AI journal records requests, responses, errors, and decisions", all(section in journal for section in journal_sections))
+    audit.check(
+        "AI journal records requests, responses, errors, and decisions",
+        all(has_populated_section(journal, section) for section in journal_sections),
+    )
+
+    readme = read_text(root, "README.md")
+    usage = read_text(root, "docs/usage.md")
+    pr = read_text(root, "docs/pull-request.md")
+    audit.check(
+        "README and usage provide runnable commands",
+        all(token in readme + usage for token in ("ci.bat", "bash ci.sh", "scripts/check_project.py")),
+    )
+    audit.check(
+        "PR notes link the requested review material",
+        all(token in pr for token in ("lab1/finish", "ai-log.md", "architecture.md", "usage.md", "ci.yml", "python scripts/check_project.py")),
+    )
 
 
 def check_workflow(root: Path, audit: Audit) -> None:
@@ -182,7 +211,7 @@ def check_workflow(root: Path, audit: Audit) -> None:
     try:
         import yaml  # type: ignore[import-not-found]
     except ImportError:
-        audit.check("workflow YAML syntax parser available", False, "install actionlint or PyYAML; structural checks ran")
+        audit.not_run("workflow YAML syntax parser", "install actionlint or PyYAML; structural checks ran")
         return
     try:
         yaml.safe_load(workflow)
@@ -251,6 +280,9 @@ def check_local_build(root: Path, audit: Audit, static_only: bool) -> None:
     if not script.is_file():
         audit.check("native build script exists", False, str(script))
         return
+    if shutil.which("cmake") is None:
+        audit.not_run("local configure/build and BasicAddition", "CMake is not available in PATH")
+        return
 
     before = None
     try:
@@ -310,8 +342,8 @@ def main() -> int:
         except (OSError, subprocess.CalledProcessError) as error:
             audit.check("audit leaves Git worktree unchanged", False, str(error))
 
-    if audit.failures:
-        print(f"CHECK FAILED: {audit.failures} required check(s) failed or could not run.")
+    if audit.failures or audit.blocked:
+        print(f"CHECK INCOMPLETE: {audit.failures} failed check(s), {audit.blocked} required check(s) not run.")
         return 1
     print("CHECK PASSED: all required checks succeeded.")
     return 0
