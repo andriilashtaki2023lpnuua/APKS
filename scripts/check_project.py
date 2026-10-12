@@ -118,9 +118,17 @@ def check_customization(root: Path, audit: Audit) -> None:
     sequence = re.search(r"(?m)^Run commands sequentially:\s*(.+)$", init)
     listed_commands = re.findall(r"`([a-z-]+)`", sequence.group(1)) if sequence else []
     ordered = listed_commands == ordered_commands
-    repeat_safe = "Repeated runs inspect existing files" in init and "preserve all files and user changes" in init
+    init_skill = read_text(root, ".github/skills/project-scaffold/SKILL.md")
+    forbidden_mutations = ["git reset --hard", "git clean -fd", "git checkout --", "git push --force", "rm -rf"]
+    repeat_safe = (
+        "Repeated runs inspect existing files and add only missing compatible content" in init
+        and "preserve all files and user changes" in init
+        and "does not silently create, switch, commit, or push branches" in init
+        and "Create only missing directories and files" in init_skill
+        and not any(command in init.lower() for command in forbidden_mutations)
+    )
     audit.check("init invokes commands in dependency order", ordered)
-    audit.check("init reruns preserve existing project and user changes", repeat_safe)
+    audit.check("init reruns preserve files and avoid destructive Git operations", repeat_safe)
 
 
 def check_project_files(root: Path, audit: Audit) -> None:
