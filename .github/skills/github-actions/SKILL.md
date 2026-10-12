@@ -1,20 +1,37 @@
 ---
 name: github-actions
-description: Add cross-platform GitHub Actions CI for the CMake and GoogleTest project.
+description: Create and validate a three-OS GitHub Actions matrix that delegates build and tests to checked-in scripts.
 ---
 
 # GitHub Actions
 
-Create `.github/workflows/ci.yml` to run the repository's build script on `windows-latest`, `ubuntu-latest`, and `macos-latest`.
+Create `.github/workflows/ci.yml` only after the platform build scripts exist. The workflow checks out the repository and invokes those scripts; all configure, compile, executable, and test logic stays in `ci.bat` or `ci.sh`.
 
 ## Requirements
 
-- Trigger on pushes and pull requests.
-- Use a matrix with all three operating systems and a clear job name.
-- Check out the repository with `actions/checkout` and use the hosted runner's CMake or install a pinned, supported CMake version.
-- Invoke `ci.bat` on Windows and `bash ci.sh` on Linux/macOS.
+- Trigger on push and pull request targeting `develop` or `master` only.
+- Use one job with a matrix containing `ubuntu-latest`, `windows-latest`, and `macos-latest`.
+- Check out the repository with `actions/checkout`.
+- Invoke `ci.bat` on Windows and `bash ci.sh` on Linux/macOS. Do not duplicate CMake or test commands in YAML.
 - Let script failures fail the job; do not mark jobs as allowed to fail.
 - Use a reasonable job timeout and least-privilege workflow permissions (`contents: read`).
 - Avoid secrets and unnecessary third-party actions.
 
-Validate YAML structure and ensure workflow commands match the checked-in scripts.
+Keep a clear per-OS job name, useful timeout, and least-privilege `contents: read` permission. Do not store credentials or secrets in the workflow or repository.
+
+## Example input and result
+
+Input: existing `ci.bat` and `ci.sh` scripts.
+
+Expected result: one matrix job in `.github/workflows/ci.yml`, filtered to push/pull_request on `develop` and `master`, with checkout and exactly one OS-appropriate script invocation per matrix leg.
+
+## Checks
+
+- Validate YAML with `actionlint .github/workflows/ci.yml` when installed.
+- Confirm the matrix has exactly the three required runner labels and the trigger branch filters include both target branches.
+- Confirm every run step invokes a checked-in script and no configure/build/test commands or secrets are embedded in YAML.
+- Verify action/job failures are not ignored.
+
+## Typical failure
+
+If `actionlint` is unavailable or reports a syntax/schema error, report that check as not run or failed and the exact diagnostic. Do not claim GitHub validation; only a real Actions run can establish remote success.
